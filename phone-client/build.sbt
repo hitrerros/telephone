@@ -24,5 +24,11 @@ lazy val root = rootProject
     // Circe
     "io.circe" %% "circe-generic" % circeVersion,
     "io.circe" %% "circe-parser" % circeVersion,
+
+    // logging
+    "org.typelevel" %% "log4cats-slf4j" % "2.7.0",
+    "ch.qos.logback" % "logback-classic" % "1.5.18"
+
+
   )
   )

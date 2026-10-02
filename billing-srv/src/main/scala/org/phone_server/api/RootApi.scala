@@ -8,7 +8,6 @@ import org.phone_commons.{PhoneClient, given}
 import org.phone_server.service.BillingService
 import zio.*
 import zio.http.*
-import zio.http.Header.Authorization
 
 import java.util.UUID
 
@@ -38,12 +37,31 @@ object RootApi {
     handler((addressee: String,req: Request ) =>
       for {
         billingService <- ZIO.service[BillingService]
-        phoneId = req.headers.find(v => v.headerType == Header.Authorization)
+        phoneId = req.headers.find(v => v.headerName == "Authorization")
         dialResult <- ZIO.fromOption(phoneId)
           .flatMap {
             v =>
               billingService
-                .dial(addressee, UUID.fromString(v.renderedValue))
+                .dial(addressee, UUID.fromString(v.renderedValue.replaceFirst("Bearer ","")))
+                .flatMap {
+                  case Left(res) => ZIO.succeed(badRequest(res.toString))
+                  case Right((_,sessionId)) => ZIO.succeed(jsonResponse(sessionId.toString))
+                }
+          }
+          .orElse(ZIO.succeed(badRequest("not authorized")))
+      } yield dialResult
+    )
+
+  private val dropRoute =
+    handler((sessionId: String,req: Request ) =>
+      for {
+        billingService <- ZIO.service[BillingService]
+        phoneId = req.headers.find(v => v.headerName == "Authorization")
+        dialResult <- ZIO.fromOption(phoneId)
+          .flatMap {
+            v =>
+              billingService
+                .drop(UUID.fromString(sessionId))
                 .flatMap {
                   case Left(res) => ZIO.succeed(badRequest(res.toString))
                   case Right(res) => ZIO.succeed(jsonResponse(res.toString))
@@ -53,12 +71,12 @@ object RootApi {
       } yield dialResult
     )
 
-
   val apiRoutes: Routes[BillingService, Response] = {
     Routes(
       Method.GET / "health" -> handler(Response.text("ok!")),
       Method.POST / "register" -> registerRoute,
-      Method.GET / "dial" / string("addressee") -> dialRoute
+      Method.GET / "dial" / string("addressee") -> dialRoute,
+      Method.GET / "drop" / string("sessionId") -> dropRoute
     )
   }
 }

@@ -102,3 +102,11 @@ databaseChangeLog:
               - column:
                   name: session_id
 
+  - changeSet:
+      id: 003-add-default-uuid-to-billing
+      author: hitrerros
+      changes:
+        - addDefaultValue:
+            tableName: billing
+            columnName: session_id
+            defaultValueComputed: gen_random_uuid()

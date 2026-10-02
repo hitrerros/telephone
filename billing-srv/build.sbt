@@ -36,6 +36,11 @@ lazy val root = rootProject
       "org.postgresql" % "postgresql" % "42.7.7",
       "com.zaxxer" % "HikariCP" % "6.3.0",
       "org.liquibase" % "liquibase-core" % "4.33.0",
-      "io.getquill" %% "quill-jdbc-zio" % "4.6.0.1"
+      "io.getquill" %% "quill-jdbc-zio" % "4.6.0.1",
+
+      // logging
+      "org.typelevel" %% "log4cats-slf4j" % "2.7.0",
+      "ch.qos.logback" % "logback-classic" % "1.5.18"
+
     )
   )

@@ -12,7 +12,10 @@ import java.util.UUID
 package object service {
   val registerUrl = "http://localhost:8080/register/"
   val dialUrl = "http://localhost:8080/dial/"
-
+  val dropUrl = "http://localhost:8080/drop/"
+  val sessionId = "session_id"
+  val clientId = "client_id"
+  
   
   implicit def encodeClient[F[_] : Async]:  EntityEncoder[F,PhoneClient] = jsonEncoderOf[F,PhoneClient]
   implicit def decodeAuthorisedClient[F[_] : Async]: EntityDecoder[F, AuthorisedPhoneClient] = jsonOf[F, AuthorisedPhoneClient]

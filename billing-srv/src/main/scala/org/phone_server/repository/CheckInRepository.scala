@@ -23,7 +23,7 @@ class CheckInRepositoryImpl extends CheckInRepository {
   }
 
   inline def activeSessionsSchema: Quoted[EntityQuery[ActiveSession]] = quote {
-    querySchema[ActiveSession]("active_sessions")
+    querySchema[ActiveSession]("active_calls")
   }
 
   inline def billingSchema: Quoted[EntityQuery[BillingRecord]] = quote {
@@ -66,7 +66,7 @@ class CheckInRepositoryImpl extends CheckInRepository {
   }
 
   override def dropConnection(sessionId : UUID): Task[Unit] = {
-    val currentTime = LocalDateTime.now
+    val endTime = LocalDateTime.now
 
     ctx.transaction {
       for {
@@ -74,7 +74,7 @@ class CheckInRepositoryImpl extends CheckInRepository {
           activeSessionsSchema.filter(_.sessionId == lift(sessionId)).delete
         })
         _ <- ctx.run(quote {
-          billingSchema.filter(_.sessionId==lift(sessionId))
+          billingSchema.filter(_.sessionId==lift(sessionId)).update(_.endTime -> lift(endTime))
         })
 
       } yield ()
