@@ -33,3 +33,72 @@ databaseChangeLog:
             columns:
               - column:
                   name: phone_number
+
+  - changeSet:
+      id: 002-create-billing-table
+      author: hitrerros
+      changes:
+        - createTable:
+            tableName: billing
+            columns:
+              - column:
+                  name: session_id
+                  type: UUID
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: from
+                  type: UUID
+                  constraints:
+                    nullable: false
+              - column:
+                  name: to
+                  type: UUID
+                  constraints:
+                    nullable: false
+              - column:
+                  name: start_time
+                  type: TIMESTAMP
+                  constraints:
+                    nullable: false
+              - column:
+                  name: end_time
+                  type: TIMESTAMP
+
+        - createTable:
+            tableName: active_calls
+            columns:
+              - column:
+                  name: id
+                  type: UUID
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+
+              - column:
+                  name: from
+                  type: UUID
+                  constraints:
+                    nullable: false
+                    unique: true
+
+              - column:
+                  name: start_time
+                  type: TIMESTAMP
+                  constraints:
+                    nullable: false
+                    
+              - column:
+                  name: session_id
+                  type: UUID
+                  constraints:
+                    nullable: false
+
+        - createIndex:
+            tableName: active_calls
+            indexName: idx_session_id
+            columns:
+              - column:
+                  name: session_id
+

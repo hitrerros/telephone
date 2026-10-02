@@ -5,7 +5,6 @@ import zio.{ULayer, ZIO, ZLayer}
 
 trait LiquibaseService {
   def performMigration: ZIO[Liquibase, Throwable, Unit]
-
 }
 
 class LiquibaseServiceImpl extends LiquibaseService {

@@ -1,11 +1,10 @@
 package org.phone_server
 
-import org.phone_server.repository.{CheckInRepository, LiquibaseService, MigrationRunner, dsLayer, liquibaseLayer}
-import zio.ZIOAppDefault
+import org.phone_server.api.RootApi.*
+import org.phone_server.repository.*
+import org.phone_server.service.BillingService
 import zio.*
 import zio.http.*
-import org.phone_server.api.CheckInApi.*
-import org.phone_server.service.CheckInService
 
 object ServerMain extends ZIOAppDefault {
 
@@ -17,7 +16,7 @@ object ServerMain extends ZIOAppDefault {
         dsLayer
       )
 
-      _ <- Server.serve(apiRoutes).provide(Server.default,CheckInService.layer,CheckInRepository.layer)
+      _ <- Server.serve(apiRoutes).provide(Server.default,BillingService.layer,CheckInRepository.layer)
     } yield ()
 
 }
