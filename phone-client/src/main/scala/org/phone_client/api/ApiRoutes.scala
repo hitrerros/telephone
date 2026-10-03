@@ -3,10 +3,16 @@ package org.phone_client.api
 import cats.effect.IO
 import cats.effect.kernel.Ref
 import org.http4s.Status.Ok
-import org.http4s.dsl.io.*
-import org.http4s.{HttpRoutes, Status}
+import org.http4s.dsl.io.{Ok, *}
+import org.http4s.headers.`Content-Type`
+import org.http4s.server.staticcontent.resourceServiceBuilder
+import org.http4s.{HttpRoutes, MediaType, Status}
 import org.phone_client.service.ServerCommunicationService.*
-import org.phone_client.service.{ServerCommunicationService, clientId}
+import org.phone_client.service.{
+  ServerCommunicationService,
+  UIService,
+  clientId
+}
 import org.phone_commons.AuthorisedPhoneClient
 
 object ApiRoutes {
@@ -19,9 +25,10 @@ object ApiRoutes {
   }
 
   def routes(session: Session[IO]): HttpRoutes[IO] = HttpRoutes.of {
-    case GET -> Root / "health" =>
-      Ok("success")
-
+    case GET -> Root   =>
+      Ok(UIService.getIndexTemplateHtml)
+        .map(_.withContentType(`Content-Type`(MediaType.text.html)))
+       
     case GET -> Root / "register" / phoneNumber / name =>
       comService.register(phoneNumber = phoneNumber, alias = name).flatMap {
         case Left(error) => Status.BadRequest(error.toString)

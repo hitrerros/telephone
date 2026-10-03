@@ -1,13 +1,12 @@
 scalaVersion := "3.9.0"
+name := "billing-server"
 
 val zioMainVersion = "2.1.26"
 val zioConfigVersion = "4.0.8"
 val testcontainersScalaVersion = "0.43.0"
 val circeVersion = "0.14.14"
 
-lazy val root = rootProject
-  .settings(
-    libraryDependencies ++= Seq(
+lazy val root =   Seq(
       //You can add library dependencies here, for example,
       //"org.scalatest" %% "scalatest" % "3.2.19" % Test,
       //"org.scalameta" %% "munit" % "1.2.3" % Test
@@ -43,4 +42,4 @@ lazy val root = rootProject
       "ch.qos.logback" % "logback-classic" % "1.5.18"
 
     )
-  )
+

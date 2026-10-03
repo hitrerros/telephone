@@ -1,10 +1,11 @@
 scalaVersion := "3.9.0"
+name := "phone-client"
+
 
 val http4sversion = "0.23.37"
 val circeVersion = "0.14.14"
 
-lazy val root = rootProject
-  .settings(
+
   libraryDependencies ++= Seq(
     //You can add library dependencies here, for example,
     //"org.scalatest" %% "scalatest" % "3.2.19" % Test,
@@ -31,4 +32,4 @@ lazy val root = rootProject
 
 
   )
-  )
+

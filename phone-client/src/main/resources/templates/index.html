@@ -1,0 +1,74 @@
+<html lang="">
+<head>
+    <link rel="stylesheet" href="/static/bootstrap/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/static/style.css">
+    <script src="/static/functions.js"></script>
+    <title>Telephone</title>
+</head>
+
+<body>
+<header class="custom-header">
+    <p class="lead">Phone client</p>
+</header>
+
+<div class="d-flex" style="min-height: 100vh;">
+
+    <!-- Left side -->
+    <main class="p-4" style="width: 70%;">
+
+        <h4 class="mb-4">Actions</h4>
+
+        <div class="card mb-4 shadow-sm">
+            <div class="card-body">
+
+                <h5 class="card-title">Personal data</h5>
+
+                <form id="checkInForm"
+                      class="row g-3 align-items-end"
+                      action="/register">
+
+                    <div class="col-md-5">
+                        <input type="text"
+                               name="name"
+                               id="checkInName"
+                               class="form-control"
+                               placeholder="Your name"
+                               required>
+                    </div>
+
+                    <div class="col-md-4">
+                        <input type="text"
+                               name="number"
+                               id="checkInPhonenumber"
+                               class="form-control"
+                               maxlength="5"
+                               pattern="[0-9]{5}"
+                               oninput="this.value = this.value.replace(/\D/g, '').slice(0, 5)"
+                               placeholder="Phone number"
+                               required>
+                    </div>
+
+                    <div class="col-md-3">
+                        <button type="submit"
+                                class="btn btn-primary w-100">
+                            Sign up
+                        </button>
+                    </div>
+
+                </form>
+
+            </div>
+        </div>
+
+    </main>
+
+    <!-- Right side -->
+    <div id="sharedOutput"
+         class="terminal-style-right"
+         style="width: 30%;">
+    </div>
+
+</div>
+
+</body>
+</html>
