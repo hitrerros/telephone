@@ -11,9 +11,6 @@ import org.phone_client.api.ApiRoutes
 
 object ClientMain extends IOApp {
 
-  val  staticRoutes: HttpRoutes[IO] =
-  resourceServiceBuilder[IO]("/static").toRoutes
-  
   def run(args: List[String]): IO[ExitCode] = (for {
     sessionData <- Resource.eval(
       Ref.of[IO, Map[String,String]](Map.empty)
@@ -25,7 +22,7 @@ object ClientMain extends IOApp {
       .default[IO]
       .withHost(Host.fromString("localhost").get)
       .withPort(Port.fromInt(port).get)
-      .withHttpApp{(staticRoutes <+> ApiRoutes.routes(sessionData)).orNotFound }
+      .withHttpApp{(ApiRoutes.routes(sessionData)).orNotFound }
       .build
   } yield (srv)).useForever
 

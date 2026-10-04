@@ -6,13 +6,9 @@ import org.http4s.Status.Ok
 import org.http4s.dsl.io.{Ok, *}
 import org.http4s.headers.`Content-Type`
 import org.http4s.server.staticcontent.resourceServiceBuilder
-import org.http4s.{HttpRoutes, MediaType, Status}
+import org.http4s.{HttpRoutes, MediaType, StaticFile, Status}
 import org.phone_client.service.ServerCommunicationService.*
-import org.phone_client.service.{
-  ServerCommunicationService,
-  UIService,
-  clientId
-}
+import org.phone_client.service.{ServerCommunicationService, UIService, clientId}
 import org.phone_commons.AuthorisedPhoneClient
 
 object ApiRoutes {
@@ -25,16 +21,24 @@ object ApiRoutes {
   }
 
   def routes(session: Session[IO]): HttpRoutes[IO] = HttpRoutes.of {
+  // UI
     case GET -> Root   =>
       Ok(UIService.getIndexTemplateHtml)
         .map(_.withContentType(`Content-Type`(MediaType.text.html)))
-       
+
+    case req @ GET -> Root / "static" / path =>
+      StaticFile
+        .fromResource(s"static/$path", Some(req))
+        .getOrElseF(NotFound())
+
+      // Business logic     
+      
     case GET -> Root / "register" / phoneNumber / name =>
       comService.register(phoneNumber = phoneNumber, alias = name).flatMap {
         case Left(error) => Status.BadRequest(error.toString)
         case Right(response) =>
           session.update(_ => responseToSessionData(response))
-            *> Ok (s"received user ${response.name}")
+            *> Ok (s"Client [${response.name}] has been signed into the app")
       }
 
     case GET -> Root / "dial" / addressee => 
