@@ -1,10 +1,11 @@
-scalaVersion := "3.9.0"
-name := "billing-server"
+scalaVersion := "3.8.4"
+name := "billing-srv"
 
 val zioMainVersion = "2.1.26"
 val zioConfigVersion = "4.0.8"
 val testcontainersScalaVersion = "0.43.0"
 val circeVersion = "0.14.14"
+
 
 libraryDependencies ++=  Seq(
       //You can add library dependencies here, for example,

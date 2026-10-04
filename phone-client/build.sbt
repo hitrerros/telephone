@@ -1,12 +1,10 @@
-scalaVersion := "3.9.0"
+scalaVersion := "3.8.4"
 name := "phone-client"
-
 
 val http4sversion = "0.23.37"
 val circeVersion = "0.14.14"
 
-
-  libraryDependencies ++= Seq(
+libraryDependencies ++= Seq(
     //You can add library dependencies here, for example,
     //"org.scalatest" %% "scalatest" % "3.2.19" % Test,
     //"org.scalameta" %% "munit" % "1.2.3" % Test
