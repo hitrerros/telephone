@@ -62,10 +62,10 @@
         </div>
         <!-- Dial -->
         <form id="dialForm"
-              class="row g-3 align-items-end"
+              class="col-md-7 row g-3"
               action="/dial">
 
-            <div class="col-md-4">
+            <div class="col-md-7">
                 <input type="text"
                        name="number"
                        id="dialPhonenumber"
@@ -77,13 +77,15 @@
                        required>
             </div>
 
-            <div class="col-md-3">
+            <div class="col-md-5">
                 <button type="submit"
                         class="btn btn-primary w-100">
                     Dial
                 </button>
             </div>
 
+        </form>
+        <form id="dropForm">
             <div class="col-md-3">
                 <button type="submit"
                         formaction="/drop"
@@ -91,7 +93,6 @@
                     Hang up
                 </button>
             </div>
-
         </form>
 
     </main>

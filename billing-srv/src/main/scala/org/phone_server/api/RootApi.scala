@@ -20,8 +20,12 @@ object RootApi {
       body = Body.fromString(json)
     )
 
-  private def badRequest(message: String): Response =
-    jsonResponse(Map("error" -> message).asJson.noSpaces, Status.BadRequest)
+  private def badRequest(message: String, status: Status = Status.BadRequest): Response =
+    Response(
+      status = status,
+      headers = Headers(Header.ContentType(MediaType.text.plain)),
+      body = Body.fromString(message)
+    )
 
   private val registerRoute = handler((req: Request) =>
     (for {
@@ -37,6 +41,7 @@ object RootApi {
     handler((addressee: String,req: Request ) =>
       for {
         billingService <- ZIO.service[BillingService]
+        _ <- ZIO.logInfo("dsfsdf")
         phoneId = req.headers.find(v => v.headerName == "Authorization")
         dialResult <- ZIO.fromOption(phoneId)
           .flatMap {
@@ -44,7 +49,8 @@ object RootApi {
               billingService
                 .dial(addressee, UUID.fromString(v.renderedValue.replaceFirst("Bearer ","")))
                 .flatMap {
-                  case Left(res) => ZIO.succeed(badRequest(res.toString))
+                  case Left(res) =>
+                    ZIO.succeed(badRequest(res.toString,Status.NotFound))
                   case Right((_,sessionId)) => ZIO.succeed(jsonResponse(sessionId.toString))
                 }
           }

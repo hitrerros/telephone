@@ -39,6 +39,24 @@ function handleDialFormSubmit({formId, numberInputId, endpoint}) {
     });
 }
 
+function handleDropFormSubmit({formId, endpoint}) {
+    const form = document.getElementById(formId);
+    if (!form) return;
+
+    form.addEventListener("submit", function (e) {
+        e.preventDefault();
+
+
+        fetch(`${endpoint}`, {
+            method: "GET"
+        })
+            .then(response => response.text())
+            .then(data => typeOutText(data))
+            .catch(error => {
+                typeOutText("error occured: " + error.text);
+            });
+    });
+}
 
 
 
@@ -54,6 +72,11 @@ document.addEventListener("DOMContentLoaded", function () {
         formId: "dialForm",
         numberInputId: "dialPhonenumber",
         endpoint: "/dial"
+    });
+
+    handleDropFormSubmit({
+        formId: "dropForm",
+        endpoint: "/drop"
     });
 
 });
