@@ -19,6 +19,47 @@ function handlePersonalDataFormSubmit({formId, nameInputId, numberInputId, endpo
     });
 }
 
+function handleDialFormSubmit({formId, numberInputId, endpoint}) {
+    const form = document.getElementById(formId);
+    if (!form) return;
+
+    form.addEventListener("submit", function (e) {
+        e.preventDefault();
+
+        const number = document.getElementById(numberInputId).value;
+
+        fetch(`${endpoint}/${encodeURIComponent(number)}`, {
+            method: "GET"
+        })
+            .then(response => response.text())
+            .then(data => typeOutText(data))
+            .catch(error => {
+                typeOutText("error occured: " + error.text);
+            });
+    });
+}
+
+
+
+
+document.addEventListener("DOMContentLoaded", function () {
+    handlePersonalDataFormSubmit({
+        formId: "checkInForm",
+        nameInputId: "checkInName",
+        numberInputId: "checkInPhonenumber",
+        endpoint: "/register"
+    });
+
+    handleDialFormSubmit({
+        formId: "dialForm",
+        numberInputId: "dialPhonenumber",
+        endpoint: "/dial"
+    });
+
+});
+
+///////////////////////////////////////////////////////////////////////////////////
+
 function typeOutText(text) {
     const messageDiv = document.getElementById("sharedOutput");
     if (!messageDiv) return;
@@ -40,15 +81,3 @@ function typeOutText(text) {
         }
     }, 30);
 }
-
-document.addEventListener("DOMContentLoaded", function () {
-    handlePersonalDataFormSubmit({
-        formId: "checkInForm",
-        nameInputId: "checkInName",
-        numberInputId: "checkInPhonenumber",
-        endpoint: "/register"
-    });
-
-
-});
-

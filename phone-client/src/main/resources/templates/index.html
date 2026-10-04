@@ -18,6 +18,7 @@
 
         <h4 class="mb-4">Actions</h4>
 
+        <!-- Register -->
         <div class="card mb-4 shadow-sm">
             <div class="card-body">
 
@@ -59,6 +60,39 @@
 
             </div>
         </div>
+        <!-- Dial -->
+        <form id="dialForm"
+              class="row g-3 align-items-end"
+              action="/dial">
+
+            <div class="col-md-4">
+                <input type="text"
+                       name="number"
+                       id="dialPhonenumber"
+                       class="form-control"
+                       maxlength="5"
+                       pattern="[0-9]{5}"
+                       oninput="this.value = this.value.replace(/\D/g, '').slice(0, 5)"
+                       placeholder="Phone number"
+                       required>
+            </div>
+
+            <div class="col-md-3">
+                <button type="submit"
+                        class="btn btn-primary w-100">
+                    Dial
+                </button>
+            </div>
+
+            <div class="col-md-3">
+                <button type="submit"
+                        formaction="/drop"
+                        class="btn btn-danger w-100">
+                    Hang up
+                </button>
+            </div>
+
+        </form>
 
     </main>
 
