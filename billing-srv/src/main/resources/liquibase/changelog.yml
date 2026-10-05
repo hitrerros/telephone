@@ -199,4 +199,25 @@ databaseChangeLog:
         - addUniqueConstraint:
             tableName: events
             columnNames: aggregate_id, version
-            constraintName: uq_events_aggregate_version                  
+            constraintName: uq_events_aggregate_version
+
+  - changeSet:
+      id: 006-add-producer-column-to-events
+      author: hitrerros
+      changes:
+      - addColumn:
+          tableName: events
+          columns:
+            - column:
+                name: producer
+                type: VARCHAR(255)
+
+  - changeSet:
+      id: 007-change-payload-jsonb-to-text
+      author: hitrerros
+      changes:
+        - modifyDataType:
+            tableName: events
+            columnName: payload
+            newDataType: TEXT
+

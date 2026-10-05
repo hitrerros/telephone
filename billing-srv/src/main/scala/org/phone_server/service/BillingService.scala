@@ -23,11 +23,11 @@ class BillingServiceImpl(repo: CheckInRepository, eventStore: EventStore) extend
     (for {
       addresseeId <- repo.findAddresseeByNumber(addressee)
       result <- addresseeId match {
-        case Some(uuid) =>
-          repo.establishConnection(client, uuid)
-            .flatMap(uuid =>
-              connectionEstablishedCommandHandler(client, uuid) *>
-              ZIO.succeed(Right((ESTABLISHED, uuid))))
+        case Some(recipient) =>
+          repo.establishConnection(client, recipient)
+            .flatMap(sessionId =>
+              connectionEstablishedCommandHandler(client, recipient, sessionId) *>
+              ZIO.succeed(Right((ESTABLISHED, sessionId))))
             .orElse(ZIO.succeed(Left(BUSY)))
         case None => ZIO.succeed(Left(NOT_REGISTERED))
       }
@@ -35,7 +35,7 @@ class BillingServiceImpl(repo: CheckInRepository, eventStore: EventStore) extend
   }
 
 
-  
+
   def drop(sessionId : SessionId) : UIO[Either[AddresseeStatus, (ConnectionStatus, SessionId)]] = {
     repo
       .dropConnection(sessionId)
@@ -44,19 +44,17 @@ class BillingServiceImpl(repo: CheckInRepository, eventStore: EventStore) extend
         ZIO.succeed(Right((DROPPED,sessionId))))
       .orElse(ZIO.succeed(Left(DISCONNECTION_ERROR)))
   }
- 
-   // CQRS command handlers 
-   private def connectionEstablishedCommandHandler(client: UUID, addressee: UUID): Task[Unit] = {
-     val sessionEventId = UUID.randomUUID()
-     val event = ConnectionEstablished(sessionId = sessionEventId, from = client, to = addressee, fromName = "", toName = "")
-     eventStore.append(sessionId = sessionEventId, expectedVersion = 0, events = List(event))
+
+   // CQRS command handlers
+   private def connectionEstablishedCommandHandler(client: UUID, addressee: UUID,sessionId : UUID): Task[Unit] = {
+     val event = ConnectionEstablished(sessionId = sessionId, from = client, to = addressee, fromName = "", toName = "")
+     eventStore.append(sessionId = sessionId, expectedVersion = 0, events = List(event))
    }
 
   private def connectionDroppedCommandHandler(sessionId: UUID): Task[Unit] = {
-    val sessionEventId = UUID.randomUUID()
     val event = ConnectionDropped(sessionId = sessionId, from = UUID.randomUUID(), to = UUID.randomUUID(),
       fromName = "", toName = "", duration = 0L)
-    eventStore.append(sessionId = sessionEventId, expectedVersion = 0, events = List(event))
+    eventStore.append(sessionId = sessionId, expectedVersion = 0, events = List(event))
   }
 }
 

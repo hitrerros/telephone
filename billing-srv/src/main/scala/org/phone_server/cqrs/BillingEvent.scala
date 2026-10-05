@@ -12,3 +12,7 @@ case class ConnectionDropped(sessionId: SessionId,
                              to: UUID, toName: String,
                              duration: Long) extends BillingEvent
 
+object BillingEvent {
+   val ConnectionEstablished = "ConnectionEstablished"
+   val ConnectionDropped = "ConnectionDropped"
+}
