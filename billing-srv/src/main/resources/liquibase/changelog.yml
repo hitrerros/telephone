@@ -110,3 +110,74 @@ databaseChangeLog:
             tableName: billing
             columnName: session_id
             defaultValueComputed: gen_random_uuid()
+
+  - changeSet:
+      id: 004-create-event-store
+      author: hitrerros
+      changes:
+        - createTable:
+            tableName: events
+            columns:
+              - column:
+                  name: event_id
+                  type: UUID
+                  defaultValueComputed: gen_random_uuid()
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+
+              - column:
+                  name: aggregate_id
+                  type: UUID
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: aggregate_type
+                  type: VARCHAR(100)
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: sequence
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: event_type
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: payload
+                  type: JSONB
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: occurred_at
+                  type: TIMESTAMP WITH TIME ZONE
+                  defaultValueComputed: CURRENT_TIMESTAMP
+                  constraints:
+                    nullable: false
+
+        - addUniqueConstraint:
+            tableName: events
+            columnNames: aggregate_id, sequence
+            constraintName: uq_events_aggregate_sequence
+
+        - createIndex:
+            tableName: events
+            indexName: idx_events_aggregate_id
+            columns:
+              - column:
+                  name: aggregate_id
+
+        - createIndex:
+            tableName: events
+            indexName: idx_events_type
+            columns:
+              - column:
+                  name: event_type
