@@ -1,11 +1,10 @@
 package org.phone_server.api
 
-import io.circe.Encoder.*
 import io.circe.generic.auto.*
 import io.circe.parser.decode
 import io.circe.syntax.*
 import org.phone_commons.{PhoneClient, given}
-import org.phone_server.service.BillingService
+import org.phone_server.service.{BillingService,CheckInService}
 import zio.*
 import zio.http.*
 
@@ -31,8 +30,8 @@ object RootApi {
     (for {
       body <- req.body.asString
       dto <- ZIO.fromEither(decode[PhoneClient](body))
-      billingService <- ZIO.service[BillingService]
-      client <- billingService.checkIn(dto)
+      checkInService <- ZIO.service[CheckInService]
+      client <- checkInService.checkIn(dto)
     } yield jsonResponse(client.get.asJson.noSpaces))
       .catchAll(error => ZIO.succeed(badRequest(error.getMessage)))
   )
@@ -41,7 +40,6 @@ object RootApi {
     handler((addressee: String,req: Request ) =>
       for {
         billingService <- ZIO.service[BillingService]
-        _ <- ZIO.logInfo("dsfsdf")
         phoneId = req.headers.find(v => v.headerName == "Authorization")
         dialResult <- ZIO.fromOption(phoneId)
           .flatMap {
@@ -77,12 +75,11 @@ object RootApi {
       } yield dialResult
     )
 
-  val apiRoutes: Routes[BillingService, Response] = {
+  val apiRoutes: Routes[BillingService & CheckInService, Response] = {
     Routes(
-      Method.GET / "health" -> handler(Response.text("ok!")),
       Method.POST / "register" -> registerRoute,
-      Method.GET / "dial" / string("addressee") -> dialRoute,
-      Method.GET / "drop" / string("sessionId") -> dropRoute
+      Method.POST / "dial" / string("addressee") -> dialRoute,
+      Method.POST / "drop" / string("sessionId") -> dropRoute
     )
   }
 }

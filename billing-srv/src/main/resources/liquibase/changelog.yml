@@ -181,3 +181,22 @@ databaseChangeLog:
             columns:
               - column:
                   name: event_type
+                  
+  - changeSet:
+      id: 005-rename-event-sequence-to-version
+      author: hitrerros
+      changes:
+        - dropUniqueConstraint:
+            tableName: events
+            constraintName: uq_events_aggregate_sequence
+
+        - renameColumn:
+            tableName: events
+            oldColumnName: sequence
+            newColumnName: version
+            columnDataType: BIGINT
+
+        - addUniqueConstraint:
+            tableName: events
+            columnNames: aggregate_id, version
+            constraintName: uq_events_aggregate_version                  

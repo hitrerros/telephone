@@ -60,7 +60,7 @@ final class ServerCommunicationServiceImpl[F[_] : Async] extends ServerCommunica
       for {
         current <- session.get
         request = Request[F](
-          method = Method.GET,
+          method = Method.POST,
           uri = Uri.fromString(s"$dialUrl$addressee").toOption.get
         ).putHeaders(Authorization(Credentials.Token(AuthScheme.Bearer, current(clientId))))
         
@@ -90,7 +90,7 @@ final class ServerCommunicationServiceImpl[F[_] : Async] extends ServerCommunica
             builder.use { client =>
               client.expect[String] {
                 Request[F](
-                  method = Method.GET,
+                  method = Method.POST,
                   uri = Uri.fromString(s"$dropUrl$id").toOption.get
                 ).putHeaders(Authorization(Credentials.Token(AuthScheme.Bearer, current(clientId))))
               }
