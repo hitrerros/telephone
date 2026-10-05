@@ -181,3 +181,43 @@ databaseChangeLog:
             columns:
               - column:
                   name: event_type
+                  
+  - changeSet:
+      id: 005-rename-event-sequence-to-version
+      author: hitrerros
+      changes:
+        - dropUniqueConstraint:
+            tableName: events
+            constraintName: uq_events_aggregate_sequence
+
+        - renameColumn:
+            tableName: events
+            oldColumnName: sequence
+            newColumnName: version
+            columnDataType: BIGINT
+
+        - addUniqueConstraint:
+            tableName: events
+            columnNames: aggregate_id, version
+            constraintName: uq_events_aggregate_version
+
+  - changeSet:
+      id: 006-add-producer-column-to-events
+      author: hitrerros
+      changes:
+      - addColumn:
+          tableName: events
+          columns:
+            - column:
+                name: producer
+                type: VARCHAR(255)
+
+  - changeSet:
+      id: 007-change-payload-jsonb-to-text
+      author: hitrerros
+      changes:
+        - modifyDataType:
+            tableName: events
+            columnName: payload
+            newDataType: TEXT
+

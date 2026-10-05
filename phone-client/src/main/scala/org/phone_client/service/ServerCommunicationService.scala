@@ -34,33 +34,33 @@ final class ServerCommunicationServiceImpl[F[_] : Async] extends ServerCommunica
       }
     }
 
-  override def register(phoneNumber: String, alias: String): F[Either[ValidationError, AuthorisedPhoneClient]] = {
-    validateNumber(phoneNumber).flatMap {
-      case Left(error) => Async[F].pure(Left(error))
-      case Right(number) =>
-        val request = Request[F](
-          method = Method.POST,
-          uri = Uri.fromString(s"${registerUrl}").toOption.get
-        ).withEntity(PhoneClient(phoneNumber = number, name = alias))
+    override def register(phoneNumber: String, alias: String): F[Either[ValidationError, AuthorisedPhoneClient]] = {
+        validateNumber(phoneNumber).flatMap {
+          case Left(error) => Async[F].pure(Left(error))
+          case Right(number) =>
+            val request = Request[F](
+              method = Method.POST,
+              uri = Uri.fromString(s"${registerUrl}").toOption.get
+            ).withEntity(PhoneClient(phoneNumber = number, name = alias))
 
-        builder.use { client =>
-          client.run(request).use { response =>
-            response.status match {
-              case Status.Ok =>
-                response.as[AuthorisedPhoneClient].map(Right(_))
-              case _ =>
-                Applicative[F].pure(Left(UnknownError))
-           }
-          }
+            builder.use { client =>
+              client.run(request).use { response =>
+                response.status match {
+                  case Status.Ok =>
+                    response.as[AuthorisedPhoneClient].map(Right(_))
+                  case _ =>
+                    Applicative[F].pure(Left(UnknownError))
+               }
+              }
+            }
         }
-    }
   }
 
     override def dial(addressee: String, session: Session[F]): F[String] = {
       for {
         current <- session.get
         request = Request[F](
-          method = Method.GET,
+          method = Method.POST,
           uri = Uri.fromString(s"$dialUrl$addressee").toOption.get
         ).putHeaders(Authorization(Credentials.Token(AuthScheme.Bearer, current(clientId))))
         
@@ -90,7 +90,7 @@ final class ServerCommunicationServiceImpl[F[_] : Async] extends ServerCommunica
             builder.use { client =>
               client.expect[String] {
                 Request[F](
-                  method = Method.GET,
+                  method = Method.POST,
                   uri = Uri.fromString(s"$dropUrl$id").toOption.get
                 ).putHeaders(Authorization(Credentials.Token(AuthScheme.Bearer, current(clientId))))
               }
